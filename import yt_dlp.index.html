@@ -1,0 +1,35 @@
+import yt_dlp
+
+playlist_url = "https://www.youtube.com/playlist?list=PLExT6MVBKs2CzmEcSCpaSQP_u7XONu6kD"
+
+ydl_opts = {
+    "quiet": True,
+    "extract_flat": True,
+    "skip_download": True,
+}
+
+with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    info = ydl.extract_info(playlist_url, download=False)
+
+items = []
+for entry in info["entries"]:
+    url = f"https://www.youtube.com/watch?v={entry['id']}"
+    title = entry.get("title", "タイトル不明")
+    items.append(f'<li><a href="{url}" target="_blank">{title}</a></li>')
+
+html = f"""<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="utf-8"><title>再生リスト</title></head>
+<body>
+  <h1>再生リスト（{len(items)}件）</h1>
+  <ul>
+  {'\n'.join(items)}
+  </ul>
+</body>
+</html>
+"""
+
+with open("playlist.html", "w", encoding="utf-8") as f:
+    f.write(html)
+
+print("playlist.html を生成しました！")
