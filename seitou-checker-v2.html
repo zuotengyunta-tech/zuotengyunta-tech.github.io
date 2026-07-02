@@ -299,7 +299,7 @@
       padding: 20px;
       border-radius: 10px;
       width: 90%;
-      max-width: 400px;
+      max-width: 500px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     }
     
@@ -331,6 +331,66 @@
       font-style: italic;
     }
     
+    .folder-tree {
+      margin-bottom: 12px;
+    }
+    
+    .folder-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e6e9ef;
+    }
+    
+    .folder-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    
+    .folder-toggle {
+      display: inline-block;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .folder-children {
+      margin-left: 20px;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .folder-children.open {
+      display: block;
+    }
+    
+    .child-item {
+      padding: 8px;
+      margin-bottom: 6px;
+      background: #fafafa;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .child-item:hover {
+      background: #f0f0f0;
+    }
+    
+    .folder-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-small {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+    
     @media (max-width: 768px) {
       header h1 {
         font-size: 1.3rem;
@@ -358,7 +418,7 @@
   <div class="container">
     <header>
       <h1>📊 正答率チェッカー v2</h1>
-      <p>完全修正版 — ページ管理・忘却曲線対応</p>
+      <p>完全修正版 — ページ管理・フォルダ格納対応</p>
     </header>
     
     <div class="tabbar" role="tablist">
@@ -393,7 +453,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label>ページあたりの基本問題数</label>
+            <label>各ページの問題数</label>
             <input type="number" id="tab1-per-page" min="1" value="2" />
           </div>
           <div class="form-group">
@@ -454,8 +514,8 @@
         <div>
           <div class="section" style="margin-bottom: 0;">
             <h2>📁 フォルダ一覧</h2>
-            <div id="tab2-folders" style="max-height: 400px; overflow-y: auto; margin-bottom: 12px;"></div>
-            <button class="btn btn-primary" id="tab2-add-folder" style="width: 100%;">+ 新規フォルダ</button>
+            <div id="tab2-folders" class="folder-tree"></div>
+            <button class="btn btn-primary" id="tab2-add-folder" style="width: 100%; margin-top: 12px;">+ 新規フォルダ</button>
           </div>
         </div>
         <div>
@@ -494,11 +554,6 @@
             <button class="btn btn-primary" id="tab2-apply">✅ 設定を反映</button>
             <button class="btn btn-success" id="tab2-save">💾 結果を記録</button>
           </div>
-          
-          <div class="section">
-            <h2>🎯 採点グリッド</h2>
-            <div class="grid-area" id="tab2-grid"></div>
-          </div>
         </div>
       </div>
     </div>
@@ -512,6 +567,18 @@
       <div class="modal-buttons">
         <button class="btn btn-primary" id="modal-ok">OK</button>
         <button class="btn" id="modal-cancel" style="background: #e6e9ef; color: #333;">キャンセル</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- SELECT FOLDER MODAL -->
+  <div class="modal" id="select-folder-modal">
+    <div class="modal-box">
+      <div class="modal-title">📁 格納先フォルダを選択</div>
+      <div id="select-folder-tree" style="max-height: 300px; overflow-y: auto; border: 1px solid #e6e9ef; border-radius: 6px; padding: 10px; margin-bottom: 16px; background: #f8f9fa;"></div>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="select-folder-ok">OK</button>
+        <button class="btn" id="select-folder-cancel" style="background: #e6e9ef; color: #333;">キャンセル</button>
       </div>
     </div>
   </div>
@@ -534,14 +601,15 @@
         marks: {},
         history: [],
         folders: [
-          { id: 1, name: "数学", children: [{ id: 11, name: "第1章" }, { id: 12, name: "第2章" }] },
-          { id: 2, name: "英語", children: [] }
+          { id: 1, name: "数学", children: [{ id: 11, name: "第1章", records: [] }, { id: 12, name: "第2章", records: [] }], records: [] },
+          { id: 2, name: "英語", children: [], records: [] }
         ],
         email: ""
       }
     };
     
     let chart = null;
+    let selectedFolderId = null;
     
     // ============ Storage ============
     function saveState() {
@@ -735,54 +803,74 @@
       });
     }
     
-    function renderTab2() {
-      const data = state.tab2.gridData;
-      const marks = state.tab2.marks;
-      renderGrid("tab2-grid", data, marks, null);
-      renderTab2Folders();
-    }
-    
     function renderTab2Folders() {
       const container = document.getElementById("tab2-folders");
       container.innerHTML = "";
       
       state.tab2.folders.forEach((folder) => {
         const folderDiv = document.createElement("div");
-        folderDiv.style.padding = "10px";
-        folderDiv.style.marginBottom = "6px";
-        folderDiv.style.background = "#fff";
-        folderDiv.style.borderRadius = "6px";
-        folderDiv.style.border = "1px solid #e6e9ef";
-        folderDiv.style.cursor = "pointer";
+        folderDiv.className = "folder-item";
         
-        const folderTitle = document.createElement("div");
-        folderTitle.style.fontWeight = "700";
-        folderTitle.textContent = "📁 " + folder.name;
-        folderTitle.style.marginBottom = "6px";
-        folderDiv.appendChild(folderTitle);
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "folder-header";
         
-        folderTitle.addEventListener("click", () => {
-          document.getElementById("tab2-title").value = folder.name;
+        const toggleSpan = document.createElement("span");
+        toggleSpan.className = "folder-toggle";
+        toggleSpan.textContent = folder.children.length > 0 ? "▼" : "-";
+        
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = "📁 " + folder.name;
+        
+        headerDiv.appendChild(toggleSpan);
+        headerDiv.appendChild(nameSpan);
+        
+        const childrenDiv = document.createElement("div");
+        childrenDiv.className = "folder-children";
+        if (folder.children.length > 0) {
+          childrenDiv.classList.add("open");
+        }
+        
+        folder.children.forEach((child) => {
+          const childDiv = document.createElement("div");
+          childDiv.className = "child-item";
+          childDiv.innerHTML = `📄 ${child.name} <span style="font-size:0.8rem; color:#999;">(${child.records ? child.records.length : 0}件)</span>`;
+          childDiv.addEventListener("click", () => {
+            document.getElementById("tab2-title").value = child.name;
+          });
+          childrenDiv.appendChild(childDiv);
         });
         
-        if (folder.children && folder.children.length > 0) {
-          folder.children.forEach((child) => {
-            const childDiv = document.createElement("div");
-            childDiv.style.padding = "6px 8px";
-            childDiv.style.marginBottom = "4px";
-            childDiv.style.marginLeft = "8px";
-            childDiv.style.background = "#fafafa";
-            childDiv.style.borderRadius = "4px";
-            childDiv.style.cursor = "pointer";
-            childDiv.textContent = "📄 " + child.name;
-            
-            childDiv.addEventListener("click", () => {
-              document.getElementById("tab2-title").value = child.name;
+        headerDiv.addEventListener("click", () => {
+          if (folder.children.length > 0) {
+            childrenDiv.classList.toggle("open");
+            toggleSpan.textContent = childrenDiv.classList.contains("open") ? "▼" : "▶";
+          }
+        });
+        
+        folderDiv.appendChild(headerDiv);
+        folderDiv.appendChild(childrenDiv);
+        
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "folder-actions";
+        
+        const addChildBtn = document.createElement("button");
+        addChildBtn.className = "btn btn-primary btn-small";
+        addChildBtn.textContent = "+ 追加";
+        addChildBtn.addEventListener("click", () => {
+          showModal("サブフォルダ名", "フォルダ名を入力", (name) => {
+            if (!name) return;
+            folder.children.push({
+              id: Date.now(),
+              name,
+              records: []
             });
-            
-            folderDiv.appendChild(childDiv);
+            saveState();
+            renderTab2Folders();
           });
-        }
+        });
+        
+        actionsDiv.appendChild(addChildBtn);
+        folderDiv.appendChild(actionsDiv);
         
         container.appendChild(folderDiv);
       });
@@ -918,7 +1006,6 @@
       state.tab2.gridData = generateGrid(config);
       state.tab2.marks = {};
       saveState();
-      renderTab2();
     }
     
     function saveTab2Result() {
@@ -935,10 +1022,80 @@
         rate: Number(rate)
       };
       
-      state.tab2.history.push(record);
       state.tab2.email = document.getElementById("tab2-email").value.trim();
-      saveState();
-      alert(`✅ 記録しました: ${rate}%`);
+      
+      if (state.tab2.folders.length === 0) {
+        alert("📁 フォルダがありません。先にフォルダを作成してください。");
+        return;
+      }
+      
+      showSelectFolderModal(record);
+    }
+    
+    function showSelectFolderModal(record) {
+      const modal = document.getElementById("select-folder-modal");
+      const tree = document.getElementById("select-folder-tree");
+      tree.innerHTML = "";
+      
+      selectedFolderId = null;
+      
+      const radioGroup = document.createElement("div");
+      
+      state.tab2.folders.forEach((folder) => {
+        const folderRadio = document.createElement("div");
+        folderRadio.style.marginBottom = "10px";
+        
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "folder";
+        input.value = folder.id;
+        input.id = "folder-" + folder.id;
+        input.addEventListener("change", () => {
+          selectedFolderId = folder.id;
+        });
+        
+        const label = document.createElement("label");
+        label.htmlFor = input.id;
+        label.textContent = " 📁 " + folder.name;
+        label.style.cursor = "pointer";
+        
+        folderRadio.appendChild(input);
+        folderRadio.appendChild(label);
+        radioGroup.appendChild(folderRadio);
+        
+        if (folder.children.length > 0) {
+          const childrenDiv = document.createElement("div");
+          childrenDiv.style.marginLeft = "20px";
+          
+          folder.children.forEach((child) => {
+            const childRadio = document.createElement("div");
+            childRadio.style.marginBottom = "8px";
+            
+            const childInput = document.createElement("input");
+            childInput.type = "radio";
+            childInput.name = "folder";
+            childInput.value = child.id;
+            childInput.id = "folder-" + child.id;
+            childInput.addEventListener("change", () => {
+              selectedFolderId = child.id;
+            });
+            
+            const childLabel = document.createElement("label");
+            childLabel.htmlFor = childInput.id;
+            childLabel.textContent = " 📄 " + child.name;
+            childLabel.style.cursor = "pointer";
+            
+            childRadio.appendChild(childInput);
+            childRadio.appendChild(childLabel);
+            childrenDiv.appendChild(childRadio);
+          });
+          
+          radioGroup.appendChild(childrenDiv);
+        }
+      });
+      
+      tree.appendChild(radioGroup);
+      modal.classList.add("active");
     }
     
     function addFolder() {
@@ -947,7 +1104,8 @@
         state.tab2.folders.push({
           id: Date.now(),
           name,
-          children: []
+          children: [],
+          records: []
         });
         saveState();
         renderTab2Folders();
@@ -1033,6 +1191,49 @@
         saveState();
       });
       
+      // Select folder modal events
+      document.getElementById("select-folder-ok").addEventListener("click", () => {
+        if (!selectedFolderId) {
+          alert("📁 フォルダを選択してください");
+          return;
+        }
+        
+        const findAndStore = (folders, id, record) => {
+          for (const folder of folders) {
+            if (folder.id === id) {
+              if (!folder.records) folder.records = [];
+              folder.records.push(record);
+              return true;
+            }
+            if (folder.children) {
+              for (const child of folder.children) {
+                if (child.id === id) {
+                  if (!child.records) child.records = [];
+                  child.records.push(record);
+                  return true;
+                }
+              }
+            }
+          }
+          return false;
+        };
+        
+        const tempRecord = state.tab2._pendingRecord;
+        if (tempRecord) {
+          findAndStore(state.tab2.folders, selectedFolderId, tempRecord);
+          delete state.tab2._pendingRecord;
+          saveState();
+          alert(`✅ 記録しました: ${tempRecord.rate}%`);
+        }
+        
+        document.getElementById("select-folder-modal").classList.remove("active");
+      });
+      
+      document.getElementById("select-folder-cancel").addEventListener("click", () => {
+        delete state.tab2._pendingRecord;
+        document.getElementById("select-folder-modal").classList.remove("active");
+      });
+      
       // Initialize values
       document.getElementById("tab1-title").value = state.tab1.title;
       document.getElementById("tab2-title").value = state.tab2.title;
@@ -1042,12 +1243,42 @@
       if (!state.tab1.gridData.length) applyTab1();
       else renderTab1();
       
-      if (!state.tab2.gridData.length) applyTab2();
-      else renderTab2();
-      
+      renderTab2Folders();
       updateChart();
       window.addEventListener("beforeunload", saveState);
     }
+    
+    // Wrapper to show modal and store record
+    function showSelectFolderModalAndStore(record) {
+      state.tab2._pendingRecord = record;
+      showSelectFolderModal(record);
+    }
+    
+    // Override saveTab2Result to use wrapper
+    const originalSaveTab2Result = saveTab2Result;
+    saveTab2Result = function() {
+      const title = document.getElementById("tab2-title").value || "無題";
+      const total = state.tab2.gridData.length;
+      const wrong = Object.keys(state.tab2.marks).length;
+      const rate = total > 0 ? ((total - wrong) / total * 100).toFixed(1) : 0;
+      
+      const record = {
+        date: new Date().toLocaleString("ja-JP"),
+        title,
+        total,
+        wrong,
+        rate: Number(rate)
+      };
+      
+      state.tab2.email = document.getElementById("tab2-email").value.trim();
+      
+      if (state.tab2.folders.length === 0) {
+        alert("📁 フォルダがありません。先にフォルダを作成してください。");
+        return;
+      }
+      
+      showSelectFolderModalAndStore(record);
+    };
     
     init();
   </script>
