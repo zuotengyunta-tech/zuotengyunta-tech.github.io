@@ -15,6 +15,7 @@
       --success: #28a745;
       --danger: #dc3545;
       --warn: #ff9800;
+      --info: #17a2b8;
     }
     
     * {
@@ -31,7 +32,7 @@
     }
     
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       background: var(--card);
       border-radius: 12px;
@@ -128,7 +129,8 @@
     .form-group input[type="text"],
     .form-group input[type="number"],
     .form-group input[type="email"],
-    .form-group input[type="date"] {
+    .form-group input[type="date"],
+    .form-group textarea {
       padding: 8px 10px;
       border: 1px solid #d7dbe6;
       border-radius: 6px;
@@ -187,6 +189,11 @@
     
     .btn-danger {
       background: var(--danger);
+      color: #fff;
+    }
+    
+    .btn-info {
+      background: var(--info);
       color: #fff;
     }
     
@@ -266,50 +273,6 @@
       opacity: 0.8;
     }
     
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      border-bottom: 1px dashed #e6e9ef;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .list-item:last-child {
-      border-bottom: none;
-    }
-    
-    .list-item-checkbox {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    
-    .list-item-content {
-      flex: 1;
-    }
-    
-    .list-item-actions {
-      display: flex;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    
-    .btn-transfer {
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
-    .btn-transfer:hover {
-      opacity: 0.8;
-    }
-    
     .modal {
       position: fixed;
       top: 0;
@@ -332,14 +295,17 @@
       padding: 20px;
       border-radius: 10px;
       width: 90%;
-      max-width: 500px;
+      max-width: 600px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      max-height: 80vh;
+      overflow-y: auto;
     }
     
     .modal-title {
       font-weight: 800;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       color: #333;
+      font-size: 1.1rem;
     }
     
     .modal-input {
@@ -364,8 +330,83 @@
       font-style: italic;
     }
     
-    .folder-tree {
+    /* ドラッグ&ドロップ表示 */
+    .drag-drop-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-height: 600px;
+    }
+    
+    .history-panel {
+      background: #f8f9fa;
+      border: 2px solid #e6e9ef;
+      border-radius: 10px;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    
+    .history-panel h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
       margin-bottom: 12px;
+      color: #333;
+    }
+    
+    .history-item {
+      background: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--primary);
+      cursor: grab;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    
+    .history-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .history-item.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+    
+    .history-item-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    
+    .history-item-meta {
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 4px;
+    }
+    
+    .history-item-rate {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    /* フォルダパネル */
+    .folder-panel {
+      background: #f8f9fa;
+      border: 2px solid #e6e9ef;
+      border-radius: 10px;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 400px;
+    }
+    
+    .folder-panel h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #333;
     }
     
     .folder-item {
@@ -376,210 +417,85 @@
       border: 1px solid #e6e9ef;
       cursor: pointer;
       transition: all 0.2s;
+      user-select: none;
     }
     
     .folder-item:hover {
       background: #f0f0f0;
     }
     
-    .folder-item.active {
+    .folder-item.drop-zone {
       background: #e8f4ff;
       border-color: var(--primary);
+      border: 2px dashed var(--primary);
     }
     
-    .folder-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .folder-name {
       font-weight: 700;
-    }
-    
-    .folder-toggle {
-      display: inline-block;
-      width: 20px;
-      text-align: center;
-    }
-    
-    .folder-children {
-      margin-left: 20px;
-      margin-top: 8px;
-      display: none;
-    }
-    
-    .folder-children.open {
-      display: block;
-    }
-    
-    .child-item {
-      padding: 8px;
-      margin-bottom: 6px;
-      background: #fafafa;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .child-item:hover {
-      background: #e8f4ff;
-    }
-    
-    .child-item.active {
-      background: #e8f4ff;
-      border-left: 3px solid var(--primary);
-      padding-left: 5px;
-    }
-    
-    .folder-actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-    
-    .btn-small {
-      padding: 6px 10px;
-      font-size: 0.8rem;
-    }
-    
-    .candidate-list {
-      background: #fff;
-      border: 1px solid #d7dbe6;
-      border-radius: 6px;
-      max-height: 200px;
-      overflow-y: auto;
-      margin-bottom: 12px;
-    }
-    
-    .candidate-item {
-      padding: 8px 12px;
-      border-bottom: 1px solid #f0f0f0;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .candidate-item:hover {
-      background: #f0f0f0;
-    }
-    
-    .candidate-item:last-child {
-      border-bottom: none;
-    }
-    
-    .tab2-content-wrapper {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 16px;
-    }
-    
-    .tab2-records {
-      background: #f8f9fa;
-      padding: 16px;
-      border-radius: 10px;
-      border: 1px solid #e6e9ef;
-      max-height: 600px;
-      overflow-y: auto;
-    }
-    
-    .tab2-records h3 {
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-      color: #333;
-    }
-    
-    .record-item {
-      background: #fff;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      border-left: 3px solid var(--primary);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .record-item:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .record-item.selected {
-      background: #e8f4ff;
-    }
-    
-    .record-title {
-      font-weight: 700;
-      font-size: 0.9rem;
       color: #333;
       margin-bottom: 4px;
     }
     
-    .record-meta {
+    .folder-count {
       font-size: 0.75rem;
       color: #999;
-      margin-bottom: 4px;
     }
     
-    .record-rate {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    
-    .record-details {
-      background: #f8f9fa;
-      padding: 16px;
-      border-radius: 10px;
-      border: 1px solid #e6e9ef;
-    }
-    
-    .record-details h3 {
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-      color: #333;
-    }
-    
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px dashed #e6e9ef;
-      font-size: 0.9rem;
-    }
-    
-    .detail-row:last-child {
-      border-bottom: none;
-    }
-    
-    .detail-label {
-      color: #666;
-    }
-    
-    .detail-value {
-      font-weight: 700;
-      color: #333;
-    }
-    
-    .schedule-form {
-      background: #fff;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #d7dbe6;
-      margin-top: 12px;
-    }
-    
-    .schedule-form label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-      color: #333;
-    }
-    
-    .schedule-form input[type="date"] {
+    /* スケジュール機能 */
+    .schedule-table {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #d7dbe6;
-      border-radius: 6px;
+      border-collapse: collapse;
+      margin-top: 12px;
+      background: #fff;
+    }
+    
+    .schedule-table th {
+      background: #f0f2f6;
+      padding: 10px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 2px solid #d7dbe6;
+      font-size: 0.85rem;
+    }
+    
+    .schedule-table td {
+      padding: 10px;
+      border-bottom: 1px solid #e6e9ef;
       font-size: 0.9rem;
-      margin-bottom: 12px;
+    }
+    
+    .schedule-table tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .schedule-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    
+    .badge-1day { background: #fff3cd; color: #856404; }
+    .badge-7day { background: #cfe2ff; color: #084298; }
+    .badge-16day { background: #d1ecf1; color: #0c5460; }
+    .badge-35day { background: #d5edda; color: #155724; }
+    .badge-62day { background: #f8d7da; color: #721c24; }
+    
+    .record-stored-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    @media (max-width: 1024px) {
+      .drag-drop-container {
+        grid-template-columns: 1fr;
+      }
     }
     
     @media (max-width: 768px) {
@@ -602,40 +518,30 @@
       .grid-area {
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
       }
-      
-      .tab2-content-wrapper {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>📊 正答率チェッカー v2</h1>
-      <p>完全修正版 — ページ管理・フォルダ格納・送信スケジュール対応</p>
+      <h1>📊 正答率チェッカー v2 - 拡張版</h1>
+      <p>履歴割り振り・忘却曲線・スマートスケジューリング対応</p>
     </header>
     
     <div class="tabbar" role="tablist">
       <button class="tab-button active" data-tab="tab1">📋 基本モード</button>
       <button class="tab-button" data-tab="tab2">📁 フォルダ管理</button>
+      <button class="tab-button" data-tab="tab3">📅 テスト履歴割り振り</button>
     </div>
     
-    <!-- TAB1 -->
+    <!-- TAB1 基本モード -->
     <div class="content active" id="tab1">
       <div class="section">
         <h2>⚙️ 設定</h2>
         <div class="form-grid">
           <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="tab1-use-candidates" />
-              変換候補を表示
-            </label>
-          </div>
-          <div class="form-group">
             <label>問題セット名</label>
             <input type="text" id="tab1-title" value="問題セット" />
-            <div class="candidate-list" id="tab1-candidates" style="display:none;"></div>
           </div>
           <div class="form-group">
             <label class="checkbox-label">
@@ -657,17 +563,6 @@
           <div class="form-group">
             <label>各ページの問題数</label>
             <input type="number" id="tab1-per-page" min="1" value="2" />
-          </div>
-          <div class="form-group">
-            <label>ページ別設定（例: 11-15:4,16:3,20:5）</label>
-            <input type="text" id="tab1-custom" placeholder="11-15:4,16:3" />
-          </div>
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="tab1-skip-enable" />
-              飛ばすページ指定
-            </label>
-            <input type="text" id="tab1-skip" placeholder="例: 41-50,56" disabled />
           </div>
         </div>
       </div>
@@ -703,74 +598,84 @@
         <h2>📊 成績推移</h2>
         <canvas id="tab1-chart" height="80"></canvas>
       </div>
+    </div>
+    
+    <!-- TAB2 フォルダ管理 -->
+    <div class="content" id="tab2">
+      <div class="section">
+        <h2>📁 フォルダ管理</h2>
+        <div class="button-group">
+          <button class="btn btn-primary" id="tab2-add-folder">+ 新規フォルダ</button>
+          <button class="btn btn-success" id="tab2-save-email">💾 メール設定を保存</button>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label>メールアドレス</label>
+            <input type="email" id="tab2-email" placeholder="example@gmail.com" />
+          </div>
+        </div>
+      </div>
       
       <div class="section">
-        <h2>📜 テスト履歴</h2>
-        <div id="tab1-history"></div>
+        <div id="tab2-folders-container"></div>
       </div>
     </div>
     
-    <!-- TAB2 -->
-    <div class="content" id="tab2">
-      <div class="tab2-content-wrapper">
-        <div>
-          <div class="section" style="margin-bottom: 0;">
-            <h2>📁 フォルダ一覧</h2>
-            <div id="tab2-folders" class="folder-tree"></div>
-            <button class="btn btn-primary" id="tab2-add-folder" style="width: 100%; margin-top: 12px;">+ 新規フォルダ</button>
-          </div>
+    <!-- TAB3 テスト履歴割り振り -->
+    <div class="content" id="tab3">
+      <div class="section">
+        <h2>📜 テスト履歴割り振り</h2>
+        <p style="margin-bottom: 16px; color: #666; font-size: 0.9rem;">履歴から記録をドラッグしてフォルダに持っていきます。自動スケジュール設定も可能です。</p>
+        
+        <div class="button-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="tab3-auto-schedule" checked />
+            忘却曲線に基づいて自動スケジュール設定
+          </label>
         </div>
-        <div>
-          <div class="section">
-            <h2>⚙️ 設定</h2>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>メールアドレス</label>
-                <input type="email" id="tab2-email" placeholder="example@gmail.com" />
-              </div>
-            </div>
-          </div>
-          
-          <div class="button-group">
-            <button class="btn btn-success" id="tab2-save">💾 結果を記録</button>
-          </div>
-          
-          <div class="tab2-records">
-            <h3>📋 格納済み記録</h3>
-            <div id="tab2-records-list"></div>
-          </div>
-          
-          <div class="record-details" style="margin-top: 20px;">
-            <h3>📊 記録詳細</h3>
-            <div id="tab2-record-detail">
-              <div class="empty-message">記録を選択してください</div>
-            </div>
-          </div>
-        </div>
+        
+        <div class="drag-drop-container" id="tab3-drag-drop"></div>
+      </div>
+      
+      <div class="section">
+        <h2>📅 スケジュール一覧</h2>
+        <table class="schedule-table" id="tab3-schedule-table">
+          <thead>
+            <tr>
+              <th>記録名</th>
+              <th>日程</th>
+              <th>状態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="tab3-schedule-body">
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
   
-  <!-- MODAL -->
-  <div class="modal" id="modal">
+  <!-- MODAL: フォルダ作成 -->
+  <div class="modal" id="modal-folder">
     <div class="modal-box">
-      <div class="modal-title" id="modal-title"></div>
-      <input type="text" class="modal-input" id="modal-input" />
+      <div class="modal-title">📁 新規フォルダ</div>
+      <input type="text" class="modal-input" id="modal-folder-name" placeholder="フォルダ名を入力" />
       <div class="modal-buttons">
-        <button class="btn btn-primary" id="modal-ok">OK</button>
-        <button class="btn" id="modal-cancel" style="background: #e6e9ef; color: #333;">キャンセル</button>
+        <button class="btn btn-primary" id="modal-folder-ok">作成</button>
+        <button class="btn" id="modal-folder-cancel" style="background: #e6e9ef; color: #333;">キャンセル</button>
       </div>
     </div>
   </div>
   
-  <!-- SELECT FOLDER MODAL -->
-  <div class="modal" id="select-folder-modal">
+  <!-- MODAL: 記録名入力 -->
+  <div class="modal" id="modal-record-name">
     <div class="modal-box">
-      <div class="modal-title">📁 格納先フォルダを選択</div>
-      <div id="select-folder-tree" style="max-height: 300px; overflow-y: auto; border: 1px solid #d7dbe6; border-radius: 6px; padding: 10px; margin-bottom: 16px; background: #f8f9fa;"></div>
+      <div class="modal-title">📝 記録名を入力</div>
+      <input type="text" class="modal-input" id="modal-record-input" placeholder="例: 2024年7月 実力テスト" />
       <div class="modal-buttons">
-        <button class="btn btn-primary" id="select-folder-ok">OK</button>
-        <button class="btn" id="select-folder-cancel" style="background: #e6e9ef; color: #333;">キャンセル</button>
+        <button class="btn btn-primary" id="modal-record-ok">保存</button>
+        <button class="btn" id="modal-record-cancel" style="background: #e6e9ef; color: #333;">キャンセル</button>
       </div>
     </div>
   </div>
@@ -778,7 +683,7 @@
   <script>
     "use strict";
     
-    const STORAGE_KEY = "seitou-checker-v2-data";
+    const STORAGE_KEY = "seitou-checker-v3-data";
     
     let state = {
       tab1: {
@@ -789,17 +694,18 @@
       },
       tab2: {
         folders: [
-          { id: 1, name: "数学", children: [{ id: 11, name: "第1章", records: [] }, { id: 12, name: "第2章", records: [] }], records: [] },
-          { id: 2, name: "英語", children: [], records: [] }
+          { id: 1, name: "数学", records: [] },
+          { id: 2, name: "英語", records: [] }
         ],
         email: ""
+      },
+      tab3: {
+        schedules: []
       }
     };
     
     let chart = null;
-    let selectedFolderId = null;
-    let selectedRecordId = null;
-    let currentFolderId = null;
+    let draggedRecord = null;
     
     // ============ Storage ============
     function saveState() {
@@ -822,71 +728,44 @@
       }
     }
     
-    // ============ Parser ============
-    function parseCustomPages(str) {
-      const result = {};
-      if (!str) return result;
-      
-      str.split(",").forEach((part) => {
-        const [range, count] = part.trim().split(":").map((s) => s.trim());
-        if (!range || !count) return;
-        
-        const num = parseInt(count, 10);
-        if (isNaN(num)) return;
-        
-        if (range.includes("-")) {
-          const [start, end] = range.split("-").map((x) => parseInt(x, 10));
-          if (!isNaN(start) && !isNaN(end)) {
-            for (let p = Math.min(start, end); p <= Math.max(start, end); p++) {
-              result[p] = num;
-            }
-          }
-        } else {
-          const p = parseInt(range, 10);
-          if (!isNaN(p)) result[p] = num;
-        }
-      });
-      
-      return result;
+    // ============ UUID生成 ============
+    function generateId() {
+      return Date.now() + "-" + Math.random().toString(36).substr(2, 9);
     }
     
-    function parseSkipPages(str) {
-      const set = new Set();
-      if (!str) return set;
+    // ============ 忘却曲線スケジュール計算 ============
+    function calculateSpacedRepetitionSchedule(baseDate) {
+      const intervals = [1, 7, 16, 35, 62]; // 日数
+      const schedules = [];
       
-      str.split(",").forEach((part) => {
-        part = part.trim();
-        if (!part) return;
-        
-        if (part.includes("-")) {
-          const [start, end] = part.split("-").map((x) => parseInt(x, 10));
-          if (!isNaN(start) && !isNaN(end)) {
-            for (let p = Math.min(start, end); p <= Math.max(start, end); p++) {
-              set.add(p);
-            }
-          }
-        } else {
-          const p = parseInt(part, 10);
-          if (!isNaN(p)) set.add(p);
-        }
+      intervals.forEach((days) => {
+        const date = new Date(baseDate);
+        date.setDate(date.getDate() + days);
+        schedules.push({
+          date: formatDate(date),
+          days: days,
+          label: days === 1 ? "1日後" : `${days}日後`
+        });
       });
       
-      return set;
+      return schedules;
     }
     
-    // ============ Grid Generation ============
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    
+    // ============ TAB1: 基本モード ============
     function generateGrid(config) {
       const grid = [];
-      const customPages = parseCustomPages(config.custom || "");
-      const skipPages = parseSkipPages(config.skip || "");
-      
       let questionNum = 1;
       
       if (config.usePages) {
         for (let p = config.start; p <= config.end; p++) {
-          if (skipPages.has(p)) continue;
-          
-          const qPerPage = customPages[p] || config.perPage;
+          const qPerPage = config.perPage;
           for (let i = 0; i < qPerPage; i++) {
             grid.push({
               id: grid.length,
@@ -912,17 +791,19 @@
       return grid;
     }
     
-    // ============ Rendering ============
-    function renderGrid(domId, gridData, marks, onUpdate) {
-      const container = document.getElementById(domId);
+    function renderGrid() {
+      const container = document.getElementById("tab1-grid");
       container.innerHTML = "";
       
-      if (!gridData || gridData.length === 0) {
+      const data = state.tab1.gridData;
+      const marks = state.tab1.marks;
+      
+      if (!data || data.length === 0) {
         container.innerHTML = '<div class="empty-message">グリッドが空です。設定を反映してください。</div>';
         return;
       }
       
-      gridData.forEach((item) => {
+      data.forEach((item) => {
         const cell = document.createElement("div");
         cell.className = "grid-cell " + (marks[item.id] ? "wrong" : "correct");
         cell.dataset.id = item.id;
@@ -941,22 +822,12 @@
             cell.classList.remove("correct");
             cell.classList.add("wrong");
           }
-          onUpdate && onUpdate();
+          updateTab1Stats();
           saveState();
         });
         
         container.appendChild(cell);
       });
-    }
-    
-    function renderTab1() {
-      const data = state.tab1.gridData;
-      const marks = state.tab1.marks;
-      
-      renderGrid("tab1-grid", data, marks, updateTab1Stats);
-      updateTab1Stats();
-      renderTab1History();
-      updateChart();
     }
     
     function updateTab1Stats() {
@@ -969,636 +840,314 @@
       document.getElementById("tab1-total").textContent = total;
     }
     
-    function renderTab1History() {
-      const box = document.getElementById("tab1-history");
-      const history = state.tab1.history;
-      
-      if (history.length === 0) {
-        box.innerHTML = '<div class="empty-message">履歴はありません</div>';
-        return;
-      }
-      
-      box.innerHTML = "";
-      [...history].reverse().forEach((record, idx) => {
-        const item = document.createElement("div");
-        item.className = "list-item";
-        
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.className = "list-item-checkbox";
-        checkbox.dataset.idx = idx;
-        
-        const content = document.createElement("div");
-        content.className = "list-item-content";
-        content.innerHTML = `
-          <div style="font-weight: 700;">${record.title}</div>
-          <div style="font-size: 0.85rem; color: #666;">${record.date}</div>
-        `;
-        
-        const rate = document.createElement("div");
-        rate.style.fontWeight = "800";
-        rate.style.color = "var(--primary)";
-        rate.textContent = record.rate + "%";
-        
-        const actions = document.createElement("div");
-        actions.className = "list-item-actions";
-        
-        const transferBtn = document.createElement("button");
-        transferBtn.className = "btn-transfer";
-        transferBtn.textContent = "📤 振替";
-        transferBtn.addEventListener("click", () => {
-          showSelectFolderModalForTransfer(record);
-        });
-        
-        actions.appendChild(transferBtn);
-        
-        item.appendChild(checkbox);
-        item.appendChild(content);
-        item.appendChild(rate);
-        item.appendChild(actions);
-        box.appendChild(item);
-      });
-      
-      updateCandidates();
-    }
-    
-    function updateCandidates() {
-      const candidateList = document.getElementById("tab1-candidates");
-      const checked = document.querySelectorAll("#tab1-history .list-item-checkbox:checked");
-      
-      if (checked.length === 0) {
-        candidateList.style.display = "none";
-        return;
-      }
-      
-      const candidates = [];
-      state.tab1.history.forEach((record) => {
-        if (record.title && !candidates.includes(record.title)) {
-          candidates.push(record.title);
-        }
-      });
-      
-      candidateList.innerHTML = "";
-      candidates.forEach((candidate) => {
-        const div = document.createElement("div");
-        div.className = "candidate-item";
-        div.textContent = candidate;
-        div.addEventListener("click", () => {
-          document.getElementById("tab1-title").value = candidate;
-          candidateList.style.display = "none";
-          document.getElementById("tab1-use-candidates").checked = false;
-        });
-        candidateList.appendChild(div);
-      });
-      
-      candidateList.style.display = "block";
-    }
-    
-    function renderTab2Folders() {
-      const container = document.getElementById("tab2-folders");
-      container.innerHTML = "";
-      
-      state.tab2.folders.forEach((folder) => {
-        const folderDiv = document.createElement("div");
-        folderDiv.className = "folder-item";
-        if (currentFolderId === folder.id) folderDiv.classList.add("active");
-        
-        const headerDiv = document.createElement("div");
-        headerDiv.className = "folder-header";
-        
-        const toggleSpan = document.createElement("span");
-        toggleSpan.className = "folder-toggle";
-        toggleSpan.textContent = folder.children.length > 0 ? "▼" : "-";
-        
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = "📁 " + folder.name;
-        
-        headerDiv.appendChild(toggleSpan);
-        headerDiv.appendChild(nameSpan);
-        
-        const childrenDiv = document.createElement("div");
-        childrenDiv.className = "folder-children";
-        if (folder.children.length > 0) {
-          childrenDiv.classList.add("open");
-        }
-        
-        folder.children.forEach((child) => {
-          const childDiv = document.createElement("div");
-          childDiv.className = "child-item";
-          if (currentFolderId === child.id) childDiv.classList.add("active");
-          childDiv.innerHTML = `📄 ${child.name} <span style="font-size:0.8rem; color:#999;">(${child.records ? child.records.length : 0}件)</span>`;
-          childDiv.addEventListener("click", (e) => {
-            e.stopPropagation();
-            selectFolder(child.id, child.records || []);
-            renderTab2Folders();
-            renderTab2Records();
-          });
-          childrenDiv.appendChild(childDiv);
-        });
-        
-        headerDiv.addEventListener("click", () => {
-          selectFolder(folder.id, folder.records || []);
-          if (folder.children.length > 0) {
-            childrenDiv.classList.toggle("open");
-            toggleSpan.textContent = childrenDiv.classList.contains("open") ? "▼" : "▶";
-          }
-          renderTab2Folders();
-          renderTab2Records();
-        });
-        
-        folderDiv.appendChild(headerDiv);
-        folderDiv.appendChild(childrenDiv);
-        
-        const actionsDiv = document.createElement("div");
-        actionsDiv.className = "folder-actions";
-        
-        const addChildBtn = document.createElement("button");
-        addChildBtn.className = "btn btn-primary btn-small";
-        addChildBtn.textContent = "+ 追加";
-        addChildBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          showModal("サブフォルダ名", "フォルダ名を入力", (name) => {
-            if (!name) return;
-            folder.children.push({
-              id: Date.now(),
-              name,
-              records: []
-            });
-            saveState();
-            renderTab2Folders();
-          });
-        });
-        
-        actionsDiv.appendChild(addChildBtn);
-        folderDiv.appendChild(actionsDiv);
-        
-        container.appendChild(folderDiv);
-      });
-    }
-    
-    function selectFolder(folderId, records) {
-      currentFolderId = folderId;
-      selectedRecordId = null;
-    }
-    
-    function renderTab2Records() {
-      const container = document.getElementById("tab2-records-list");
-      container.innerHTML = "";
-      
-      if (!currentFolderId) {
-        container.innerHTML = '<div class="empty-message">フォルダを選択してください</div>';
-        return;
-      }
-      
-      let records = [];
-      const findRecords = (folders) => {
-        for (const folder of folders) {
-          if (folder.id === currentFolderId) {
-            records = folder.records || [];
-            return;
-          }
-          if (folder.children) {
-            for (const child of folder.children) {
-              if (child.id === currentFolderId) {
-                records = child.records || [];
-                return;
-              }
-            }
-          }
-        }
-      };
-      
-      findRecords(state.tab2.folders);
-      
-      if (records.length === 0) {
-        container.innerHTML = '<div class="empty-message">記録がありません</div>';
-        return;
-      }
-      
-      records.forEach((record, idx) => {
-        const item = document.createElement("div");
-        item.className = "record-item";
-        if (selectedRecordId === idx) item.classList.add("selected");
-        item.innerHTML = `
-          <div class="record-title">${record.title}</div>
-          <div class="record-meta">${record.date}</div>
-          <div class="record-rate">${record.rate}%</div>
-        `;
-        item.addEventListener("click", () => {
-          selectedRecordId = idx;
-          renderTab2Records();
-          renderTab2RecordDetail(record);
-        });
-        container.appendChild(item);
-      });
-    }
-    
-    function renderTab2RecordDetail(record) {
-      const container = document.getElementById("tab2-record-detail");
-      container.innerHTML = `
-        <div class="detail-row">
-          <span class="detail-label">📝 問題セット</span>
-          <span class="detail-value">${record.title}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">📅 記録日</span>
-          <span class="detail-value">${record.date}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">📊 正答率</span>
-          <span class="detail-value">${record.rate}%</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">❌ 間違い数</span>
-          <span class="detail-value">${record.wrong}問</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">📋 問題数</span>
-          <span class="detail-value">${record.total}問</span>
-        </div>
-        <div class="schedule-form">
-          <label>📬 送信予定日</label>
-          <input type="date" id="schedule-date" value="${record.sendDate || ''}" />
-          <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" onclick="updateScheduleDate()">✅ 保存</button>
-        </div>
-      `;
-    }
-    
-    window.updateScheduleDate = function() {
-      const dateInput = document.getElementById("schedule-date");
-      const newDate = dateInput.value;
-      
-      if (!currentFolderId || selectedRecordId === null) return;
-      
-      let found = false;
-      const findAndUpdate = (folders) => {
-        for (const folder of folders) {
-          if (folder.id === currentFolderId) {
-            if (folder.records && folder.records[selectedRecordId]) {
-              folder.records[selectedRecordId].sendDate = newDate;
-              found = true;
-            }
-            return;
-          }
-          if (folder.children) {
-            for (const child of folder.children) {
-              if (child.id === currentFolderId) {
-                if (child.records && child.records[selectedRecordId]) {
-                  child.records[selectedRecordId].sendDate = newDate;
-                  found = true;
-                }
-                return;
-              }
-            }
-          }
-        }
-      };
-      
-      findAndUpdate(state.tab2.folders);
-      
-      if (found) {
-        saveState();
-        alert("✅ 送信予定日を保存しました");
-      }
-    };
-    
-    function updateChart() {
-      const canvas = document.getElementById("tab1-chart");
-      if (!canvas) return;
-      
-      const history = state.tab1.history;
-      const labels = history.map((h) => h.date);
-      const data = history.map((h) => Number(h.rate) || 0);
-      
-      if (!chart) {
-        chart = new Chart(canvas, {
-          type: "line",
-          data: {
-            labels,
-            datasets: [
-              {
-                label: "正答率 (%)",
-                data,
-                borderColor: "var(--primary)",
-                backgroundColor: "rgba(102, 126, 234, 0.1)",
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: { display: false }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100
-              }
-            }
-          }
-        });
-      } else {
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = data;
-        chart.update();
-      }
-    }
-    
-    // ============ Actions ============
-    function applyTab1() {
-      if (!confirm("現在の採点結果を消して新しく生成しますか？")) return;
-      
+    document.getElementById("tab1-apply").addEventListener("click", () => {
       const config = {
         useCount: document.getElementById("tab1-use-count").checked,
+        count: parseInt(document.getElementById("tab1-count").value) || 30,
         usePages: document.getElementById("tab1-use-pages").checked,
-        count: parseInt(document.getElementById("tab1-count").value, 10) || 30,
-        start: parseInt(document.getElementById("tab1-start").value, 10) || 1,
-        end: parseInt(document.getElementById("tab1-end").value, 10) || 1,
-        perPage: parseInt(document.getElementById("tab1-per-page").value, 10) || 1,
-        custom: document.getElementById("tab1-custom").value.trim(),
-        skip: document.getElementById("tab1-skip-enable").checked
-          ? document.getElementById("tab1-skip").value.trim()
-          : ""
+        start: parseInt(document.getElementById("tab1-start").value) || 11,
+        end: parseInt(document.getElementById("tab1-end").value) || 25,
+        perPage: parseInt(document.getElementById("tab1-per-page").value) || 2
       };
       
-      state.tab1.title = document.getElementById("tab1-title").value || state.tab1.title;
       state.tab1.gridData = generateGrid(config);
       state.tab1.marks = {};
+      renderGrid();
+      updateTab1Stats();
       saveState();
-      renderTab1();
-    }
+      alert("設定が反映されました！");
+    });
     
-    function saveTab1Result() {
-      const title = document.getElementById("tab1-title").value || "無題";
+    document.getElementById("tab1-save").addEventListener("click", () => {
+      const title = document.getElementById("tab1-title").value || "記録";
+      document.getElementById("modal-record-input").value = title + " " + formatDate(new Date());
+      document.getElementById("modal-record-name").classList.add("active");
+    });
+    
+    document.getElementById("modal-record-ok").addEventListener("click", () => {
+      const title = document.getElementById("modal-record-input").value || "記録";
       const total = state.tab1.gridData.length;
       const wrong = Object.keys(state.tab1.marks).length;
       const rate = total > 0 ? ((total - wrong) / total * 100).toFixed(1) : 0;
       
       const record = {
-        date: new Date().toLocaleString("ja-JP"),
-        title,
-        total,
-        wrong,
-        rate: Number(rate)
+        id: generateId(),
+        title: title,
+        date: formatDate(new Date()),
+        total: total,
+        wrong: wrong,
+        rate: rate,
+        gridData: JSON.parse(JSON.stringify(state.tab1.gridData)),
+        marks: JSON.parse(JSON.stringify(state.tab1.marks))
       };
       
       state.tab1.history.push(record);
-      saveState();
-      renderTab1History();
-      updateChart();
-      alert(`✅ 記録しました: ${rate}%`);
-    }
-    
-    function clearTab1() {
-      if (!confirm("📜 全データを削除しますか？")) return;
-      state.tab1.history = [];
       state.tab1.marks = {};
-      state.tab1.gridData = [];
+      renderGrid();
+      
+      document.getElementById("modal-record-name").classList.remove("active");
       saveState();
-      renderTab1();
-      alert("✅ 削除しました");
-    }
+      alert("記録が保存されました！");
+    });
     
-    function exportTab1Data() {
-      const data = JSON.stringify(state.tab1.history, null, 2);
-      const blob = new Blob([data], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "seitou-history-" + new Date().getTime() + ".json";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+    document.getElementById("modal-record-cancel").addEventListener("click", () => {
+      document.getElementById("modal-record-name").classList.remove("active");
+    });
     
-    function saveTab2Result() {
-      if (!currentFolderId) {
-        alert("📁 フォルダを選択してください");
-        return;
+    document.getElementById("tab1-clear").addEventListener("click", () => {
+      if (confirm("全データを削除しますか？")) {
+        state.tab1 = { title: "問題セット", gridData: [], marks: {}, history: [] };
+        renderGrid();
+        updateTab1Stats();
+        saveState();
+        alert("全データが削除されました");
       }
-      
-      const email = document.getElementById("tab2-email").value.trim();
-      if (!email) {
-        alert("📧 メールアドレスを入力してください");
-        return;
-      }
-      
-      state.tab2.email = email;
-      saveState();
-      alert("✅ メールアドレスを保存しました");
-    }
+    });
     
-    function showSelectFolderModalForTransfer(record) {
-      const modal = document.getElementById("select-folder-modal");
-      const tree = document.getElementById("select-folder-tree");
-      tree.innerHTML = "";
-      
-      selectedFolderId = null;
-      
-      const radioGroup = document.createElement("div");
+    // ============ TAB2: フォルダ管理 ============
+    function renderTab2() {
+      const container = document.getElementById("tab2-folders-container");
+      container.innerHTML = "";
       
       state.tab2.folders.forEach((folder) => {
-        const folderRadio = document.createElement("div");
-        folderRadio.style.marginBottom = "10px";
+        const folderDiv = document.createElement("div");
+        folderDiv.style.marginBottom = "20px";
         
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "folder";
-        input.value = folder.id;
-        input.id = "folder-" + folder.id;
-        input.addEventListener("change", () => {
-          selectedFolderId = folder.id;
-        });
+        const header = document.createElement("div");
+        header.style.cssText = "font-weight: 700; margin-bottom: 8px; color: #333;";
+        header.textContent = `📁 ${folder.name} (${folder.records.length} 件)`;
+        folderDiv.appendChild(header);
         
-        const label = document.createElement("label");
-        label.htmlFor = input.id;
-        label.textContent = " 📁 " + folder.name;
-        label.style.cursor = "pointer";
-        
-        folderRadio.appendChild(input);
-        folderRadio.appendChild(label);
-        radioGroup.appendChild(folderRadio);
-        
-        if (folder.children.length > 0) {
-          const childrenDiv = document.createElement("div");
-          childrenDiv.style.marginLeft = "20px";
-          
-          folder.children.forEach((child) => {
-            const childRadio = document.createElement("div");
-            childRadio.style.marginBottom = "8px";
-            
-            const childInput = document.createElement("input");
-            childInput.type = "radio";
-            childInput.name = "folder";
-            childInput.value = child.id;
-            childInput.id = "folder-" + child.id;
-            childInput.addEventListener("change", () => {
-              selectedFolderId = child.id;
-            });
-            
-            const childLabel = document.createElement("label");
-            childLabel.htmlFor = childInput.id;
-            childLabel.textContent = " 📄 " + child.name;
-            childLabel.style.cursor = "pointer";
-            
-            childRadio.appendChild(childInput);
-            childRadio.appendChild(childLabel);
-            childrenDiv.appendChild(childRadio);
+        const list = document.createElement("div");
+        if (folder.records.length === 0) {
+          list.innerHTML = '<div class="empty-message">記録はありません</div>';
+        } else {
+          folder.records.forEach((record) => {
+            const item = document.createElement("div");
+            item.style.cssText = "background: #fff; padding: 12px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid var(--primary);";
+            item.innerHTML = `
+              <div style="font-weight: 700; color: #333;">${record.title}</div>
+              <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">${record.date} | 正答率: ${record.rate}%</div>
+            `;
+            list.appendChild(item);
           });
-          
-          radioGroup.appendChild(childrenDiv);
         }
+        folderDiv.appendChild(list);
+        container.appendChild(folderDiv);
       });
-      
-      tree.appendChild(radioGroup);
-      modal.classList.add("active");
-      
-      document.getElementById("select-folder-ok").onclick = () => {
-        if (!selectedFolderId) {
-          alert("📁 フォルダを選択してください");
-          return;
-        }
-        
-        const findAndStore = (folders, id, record) => {
-          for (const folder of folders) {
-            if (folder.id === id) {
-              if (!folder.records) folder.records = [];
-              folder.records.push(record);
-              return true;
-            }
-            if (folder.children) {
-              for (const child of folder.children) {
-                if (child.id === id) {
-                  if (!child.records) child.records = [];
-                  child.records.push(record);
-                  return true;
-                }
-              }
-            }
-          }
-          return false;
-        };
-        
-        findAndStore(state.tab2.folders, selectedFolderId, record);
-        saveState();
-        renderTab2Folders();
-        alert(`✅ タブ2のフォルダに振替しました: ${record.rate}%`);
-        modal.classList.remove("active");
-      };
-      
-      document.getElementById("select-folder-cancel").onclick = () => {
-        modal.classList.remove("active");
-      };
     }
     
-    function addFolder() {
-      showModal("新規フォルダ名", "フォルダ名を入力", (name) => {
-        if (!name) return;
+    document.getElementById("tab2-add-folder").addEventListener("click", () => {
+      document.getElementById("modal-folder-name").value = "";
+      document.getElementById("modal-folder").classList.add("active");
+    });
+    
+    document.getElementById("modal-folder-ok").addEventListener("click", () => {
+      const name = document.getElementById("modal-folder-name").value.trim();
+      if (name) {
         state.tab2.folders.push({
-          id: Date.now(),
-          name,
-          children: [],
+          id: generateId(),
+          name: name,
           records: []
         });
+        document.getElementById("modal-folder").classList.remove("active");
+        renderTab2();
         saveState();
-        renderTab2Folders();
-      });
-    }
+      }
+    });
     
-    // ============ Modal ============
-    function showModal(title, placeholder, callback) {
-      const modal = document.getElementById("modal");
-      document.getElementById("modal-title").textContent = title;
-      const input = document.getElementById("modal-input");
-      input.value = "";
-      input.placeholder = placeholder;
-      modal.classList.add("active");
-      input.focus();
-      
-      const ok = document.getElementById("modal-ok");
-      const cancel = document.getElementById("modal-cancel");
-      
-      const onOk = () => {
-        const value = input.value.trim();
-        cleanup();
-        callback && callback(value);
-      };
-      
-      const onCancel = () => {
-        cleanup();
-      };
-      
-      const cleanup = () => {
-        ok.removeEventListener("click", onOk);
-        cancel.removeEventListener("click", onCancel);
-        input.removeEventListener("keydown", onKeyDown);
-        modal.classList.remove("active");
-      };
-      
-      const onKeyDown = (e) => {
-        if (e.key === "Enter") onOk();
-        if (e.key === "Escape") onCancel();
-      };
-      
-      ok.addEventListener("click", onOk);
-      cancel.addEventListener("click", onCancel);
-      input.addEventListener("keydown", onKeyDown);
-    }
+    document.getElementById("modal-folder-cancel").addEventListener("click", () => {
+      document.getElementById("modal-folder").classList.remove("active");
+    });
     
-    // ============ Init ============
-    function init() {
-      loadState();
+    document.getElementById("tab2-save-email").addEventListener("click", () => {
+      const email = document.getElementById("tab2-email").value.trim();
+      state.tab2.email = email;
+      saveState();
+      alert("メールアドレスが保存されました");
+    });
+    
+    // ============ TAB3: テスト履歴割り振り ============
+    function renderTab3() {
+      const container = document.getElementById("tab3-drag-drop");
+      container.innerHTML = "";
       
-      // Tab switching
-      document.querySelectorAll(".tab-button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const tabId = btn.dataset.tab;
+      // 左パネル: 履歴
+      const leftPanel = document.createElement("div");
+      leftPanel.className = "history-panel";
+      leftPanel.innerHTML = "<h3>📜 テスト履歴</h3>";
+      
+      const historyList = document.createElement("div");
+      if (state.tab1.history.length === 0) {
+        historyList.innerHTML = '<div class="empty-message">記録がありません</div>';
+      } else {
+        state.tab1.history.forEach((record) => {
+          const item = document.createElement("div");
+          item.className = "history-item";
+          item.draggable = true;
+          item.dataset.recordId = record.id;
+          item.innerHTML = `
+            <div class="history-item-title">${record.title}</div>
+            <div class="history-item-meta">${record.date}</div>
+            <div class="history-item-rate">正答率: ${record.rate}%</div>
+          `;
           
-          document.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
+          item.addEventListener("dragstart", (e) => {
+            draggedRecord = record;
+            item.classList.add("dragging");
+          });
           
-          document.querySelectorAll(".content").forEach((c) => c.classList.remove("active"));
-          document.getElementById(tabId).classList.add("active");
+          item.addEventListener("dragend", () => {
+            item.classList.remove("dragging");
+            draggedRecord = null;
+          });
+          
+          historyList.appendChild(item);
         });
+      }
+      leftPanel.appendChild(historyList);
+      container.appendChild(leftPanel);
+      
+      // 右パネル: フォルダ
+      const rightPanel = document.createElement("div");
+      rightPanel.className = "folder-panel";
+      rightPanel.innerHTML = "<h3>📁 フォルダを選択</h3>";
+      
+      const folderList = document.createElement("div");
+      state.tab2.folders.forEach((folder) => {
+        const folderItem = document.createElement("div");
+        folderItem.className = "folder-item";
+        folderItem.dataset.folderId = folder.id;
+        folderItem.innerHTML = `
+          <div class="folder-name">${folder.name}</div>
+          <div class="folder-count">保存済み: ${folder.records.length} 件</div>
+        `;
+        
+        folderItem.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          folderItem.classList.add("drop-zone");
+        });
+        
+        folderItem.addEventListener("dragleave", () => {
+          folderItem.classList.remove("drop-zone");
+        });
+        
+        folderItem.addEventListener("drop", () => {
+          folderItem.classList.remove("drop-zone");
+          
+          if (!draggedRecord) return;
+          
+          // 重複チェック
+          if (folder.records.some(r => r.id === draggedRecord.id)) {
+            alert("この記録は既にこのフォルダに保存されています");
+            return;
+          }
+          
+          // 記録をコピーしてフォルダに追加
+          const recordCopy = JSON.parse(JSON.stringify(draggedRecord));
+          folder.records.push(recordCopy);
+          
+          // 自動スケジュール設定
+          if (document.getElementById("tab3-auto-schedule").checked) {
+            const schedules = calculateSpacedRepetitionSchedule(new Date(draggedRecord.date));
+            schedules.forEach((schedule) => {
+              const existing = state.tab3.schedules.find(
+                s => s.date === schedule.date && s.recordId === draggedRecord.id
+              );
+              if (!existing) {
+                state.tab3.schedules.push({
+                  id: generateId(),
+                  recordId: draggedRecord.id,
+                  recordTitle: draggedRecord.title,
+                  date: schedule.date,
+                  label: schedule.label,
+                  days: schedule.days,
+                  sent: false
+                });
+              }
+            });
+          }
+          
+          renderTab3();
+          renderTab2();
+          saveState();
+          alert(`記録を「${folder.name}」に保存しました！`);
+        });
+        
+        folderList.appendChild(folderItem);
       });
-      
-      // Tab1 events
-      document.getElementById("tab1-apply").addEventListener("click", applyTab1);
-      document.getElementById("tab1-save").addEventListener("click", saveTab1Result);
-      document.getElementById("tab1-clear").addEventListener("click", clearTab1);
-      document.getElementById("tab1-export").addEventListener("click", exportTab1Data);
-      
-      document.getElementById("tab1-use-candidates").addEventListener("change", () => {
-        updateCandidates();
-      });
-      
-      const skipCheckbox = document.getElementById("tab1-skip-enable");
-      skipCheckbox.addEventListener("change", () => {
-        document.getElementById("tab1-skip").disabled = !skipCheckbox.checked;
-      });
-      
-      // Tab2 events
-      document.getElementById("tab2-save").addEventListener("click", saveTab2Result);
-      document.getElementById("tab2-add-folder").addEventListener("click", addFolder);
-      
-      // Initialize values
-      document.getElementById("tab1-title").value = state.tab1.title;
-      document.getElementById("tab2-email").value = state.tab2.email;
-      
-      // Initial render
-      if (!state.tab1.gridData.length) applyTab1();
-      else renderTab1();
-      
-      renderTab2Folders();
-      renderTab2Records();
-      updateChart();
-      window.addEventListener("beforeunload", saveState);
+      rightPanel.appendChild(folderList);
+      container.appendChild(rightPanel);
     }
     
-    init();
+    function renderTab3ScheduleTable() {
+      const tbody = document.getElementById("tab3-schedule-body");
+      tbody.innerHTML = "";
+      
+      // 日付でソート
+      const sorted = [...state.tab3.schedules].sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      sorted.forEach((schedule) => {
+        const tr = document.createElement("tr");
+        
+        const recordNameCell = document.createElement("td");
+        recordNameCell.textContent = schedule.recordTitle;
+        tr.appendChild(recordNameCell);
+        
+        const dateCell = document.createElement("td");
+        dateCell.textContent = `${schedule.date} (${schedule.label})`;
+        tr.appendChild(dateCell);
+        
+        const statusCell = document.createElement("td");
+        statusCell.innerHTML = schedule.sent 
+          ? '<span class="record-stored-badge">送信済み</span>'
+          : '<span class="schedule-badge badge-' + 
+            (schedule.days === 1 ? '1day' : schedule.days === 7 ? '7day' : 
+             schedule.days === 16 ? '16day' : schedule.days === 35 ? '35day' : '62day') + 
+            '">' + schedule.label + '</span>';
+        tr.appendChild(statusCell);
+        
+        const actionCell = document.createElement("td");
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn btn-danger";
+        deleteBtn.style.padding = "4px 8px";
+        deleteBtn.style.fontSize = "0.8rem";
+        deleteBtn.textContent = "削除";
+        deleteBtn.addEventListener("click", () => {
+          state.tab3.schedules = state.tab3.schedules.filter(s => s.id !== schedule.id);
+          renderTab3ScheduleTable();
+          saveState();
+        });
+        actionCell.appendChild(deleteBtn);
+        tr.appendChild(actionCell);
+        
+        tbody.appendChild(tr);
+      });
+    }
+    
+    // ============ タブ切り替え ============
+    document.querySelectorAll(".tab-button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tabId = btn.dataset.tab;
+        
+        document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".content").forEach(c => c.classList.remove("active"));
+        
+        btn.classList.add("active");
+        document.getElementById(tabId).classList.add("active");
+        
+        if (tabId === "tab2") renderTab2();
+        if (tabId === "tab3") {
+          renderTab3();
+          renderTab3ScheduleTable();
+        }
+      });
+    });
+    
+    // ============ 初期化 ============
+    loadState();
+    renderGrid();
+    updateTab1Stats();
   </script>
 </body>
 </html>
